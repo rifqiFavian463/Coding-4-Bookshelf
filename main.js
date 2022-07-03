@@ -4,7 +4,17 @@ document.addEventListener('DOMContentLoaded', function () {
     event.preventDefault();
     addBook();
   });
+  const searchBook = document.getElementById('searchBook');
+  searchBook.addEventListener('submit', function(event){
+    event.preventDefault();
+    const searchValue = document.getElementById('searchBookTitle').toLowerCase();
+    console.log(filterResults(books,searchValue));
+  })
 });
+
+function filterResults(list, keyword) {
+  return list.filter((buku) => buku.title.toLowerCase().includes(keyword));
+}
 
 function addBook() {
   const judulBuku = document.getElementById('inputBookTitle').value;
@@ -76,6 +86,10 @@ function makeBook(objekBuku) {
     buttonContainer.classList.add('action');
     buttonContainer.append(greenButton, redButton)
 
+    redButton.addEventListener('click', function(){
+      removeBook(objekBuku.id)
+    })
+
     bookItem.append(buttonContainer);
   } else {
     const greenButton = document.createElement('button')
@@ -93,6 +107,9 @@ function makeBook(objekBuku) {
     greenButton.addEventListener('click', function () {
       addBooktoComplete(objekBuku.id)
     })
+    redButton.addEventListener('click', function(){
+      removeBook(objekBuku.id)
+    })
 
     bookItem.append(buttonContainer);
   }
@@ -106,6 +123,13 @@ function addBooktoComplete(bookId) {
 
   document.dispatchEvent(new Event(RENDER_EVENT));
 }
+function removeBook(bookId){
+  const bookTarget = findBookIndex(bookId);
+
+  if (bookTarget === -1) return;
+  books.splice(bookTarget, 1);
+  document.dispatchEvent(new Event(RENDER_EVENT));
+}
 
 function findBook(bookId) {
   for (const bookItem of books) {
@@ -114,4 +138,12 @@ function findBook(bookId) {
     }
   }
   return null;
+}
+function findBookIndex(bookId){
+  for (const index in books){
+    if (books[index].id === bookId){
+      return index;
+    }
+  }
+  return -1;
 }

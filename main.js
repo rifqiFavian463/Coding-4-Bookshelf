@@ -39,13 +39,22 @@ document.addEventListener(RENDER_EVENT, function(){
 
     const completeBookshelfList = document.getElementById('completeBookshelfList');
     completeBookshelfList.innerHTML = '';
-    
-    for ( const bookItem of books){
-        const bookElement = makeBook(bookItem);
-        if (!bookItem.isComplete)
-            incompleteBookshelfList.append(bookElement);
-        else 
-            completeBookshelfList.append(bookElement);
+
+    const inputBookIsComplete = document.getElementById("inputBookIsComplete");
+    if (inputBookIsComplete.checked == true){
+        for (const bookItem of books){
+            const bookElement = makeBook(bookItem);
+            completeBookshelfList.append(bookElement)
+        }
+        return inputBookIsComplete;
+    }else {
+        for ( const bookItem of books){
+            const bookElement = makeBook(bookItem);
+            if (!bookItem.isComplete)
+                incompleteBookshelfList.append(bookElement);
+            else 
+                completeBookshelfList.append(bookElement);
+        }
     }
 })
 

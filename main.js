@@ -4,17 +4,26 @@ document.addEventListener('DOMContentLoaded', function () {
     event.preventDefault();
     addBook();
   });
-  const searchBook = document.getElementById('searchBook');
-  searchBook.addEventListener('submit', function(event){
+  const searchForm = document.getElementById("searchBook");
+  searchForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const searchValue = document.getElementById('searchBookTitle').toLowerCase();
-    console.log(filterResults(books,searchValue));
-  })
+    searchBook();
+  });
 });
 
-function filterResults(list, keyword) {
-  return list.filter((buku) => buku.title.toLowerCase().includes(keyword));
-}
+const searchBook = () => {
+  const searchInput = document.getElementById("searchBookTitle").value.toLowerCase();
+  const bookList = document.getElementsByClassName("book_list");
+
+  for (let i = 0; i < bookList.length; i++) {
+    const itemTitle = bookList[i].getElementsByTagName("h3");
+    if (itemTitle.textContent.toLowerCase().includes(searchInput)) {
+      bookList[i].classList.remove("hidden");
+    } else {
+      bookList[i].classList.add("hidden");
+    }
+  }
+};
 
 function addBook() {
   const judulBuku = document.getElementById('inputBookTitle').value;

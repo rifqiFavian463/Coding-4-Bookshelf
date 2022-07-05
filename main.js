@@ -4,26 +4,25 @@ document.addEventListener('DOMContentLoaded', function () {
     event.preventDefault();
     addBook();
   });
-  const searchForm = document.getElementById("searchBook");
-  searchForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    searchBook();
-  });
+
 });
 
-const searchBook = () => {
-  const searchInput = document.getElementById("searchBookTitle").value.toLowerCase();
-  const bookList = document.getElementsByClassName("book_list");
+const searchButton = document.querySelector("#searchSubmit");
 
-  for (let i = 0; i < bookList.length; i++) {
-    const itemTitle = bookList[i].getElementsByTagName("h3");
-    if (itemTitle.textContent.toLowerCase().includes(searchInput)) {
-      bookList[i].classList.remove("hidden");
-    } else {
-      bookList[i].classList.add("hidden");
-    }
-  }
-};
+searchButton.addEventListener("click", (e) => {
+const inputSearch = document.querySelector("#searchBookTitle").value;
+const bookItems = document.querySelectorAll(".book_list");
+
+bookItems.forEach((bookItem) => {
+const bookTitle = bookItem.getElementsByTagName("h3").innerText;
+if (bookTitle.toLowerCase().includes(inputSearch.toLowerCase())) {
+bookItem.setAttribute("style", "display: '' ;");
+} else {
+bookItem.setAttribute("style", "display: none;");
+}
+});
+e.preventDefault();
+});
 
 function addBook() {
   const judulBuku = document.getElementById('inputBookTitle').value;
@@ -95,6 +94,10 @@ function makeBook(objekBuku) {
     buttonContainer.classList.add('action');
     buttonContainer.append(greenButton, redButton)
 
+    greenButton.addEventListener('click', function(){
+      undoBook(objekBuku.id);
+    })
+
     redButton.addEventListener('click', function(){
       removeBook(objekBuku.id)
     })
@@ -123,6 +126,14 @@ function makeBook(objekBuku) {
     bookItem.append(buttonContainer);
   }
   return bookItem;
+}
+
+function undoBook(bookId){
+  const bookTarget = findBook(bookId)
+  if (bookTarget == null) return;
+  objekBuku.isComplete = false;
+  
+  document.dispatchEvent(new Event(RENDER_EVENT))
 }
 
 function addBooktoComplete(bookId) {

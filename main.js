@@ -6,6 +6,19 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
+document.querySelector('#searchSubmit').addEventListener('click', function (event) {
+  event.preventDefault();
+
+  const titleQuery = document.querySelector('#searchBookTitle').value;
+
+  if (titleQuery != '') {
+    const filteredBooks = books.filter((value) => value.title.includes(titleQuery));
+    renderBooks(filteredBooks);
+  }
+  else document.dispatchEvent(new Event(RENDER_EVENT));
+
+});
+
 function addBook() {
   const judulBuku = document.getElementById('inputBookTitle').value;
   const authorBuku = document.getElementById('inputBookAuthor').value;
@@ -33,6 +46,20 @@ function generateObjekBuku(id, title, author, year, isComplete) {
 
 const books = [];
 const RENDER_EVENT = 'render-book';
+
+const renderBooks = (bookData) => {
+  const incompleteBookshelfList = document.getElementById('incompleteBookshelfList');
+  incompleteBookshelfList.innerHTML = '';
+
+  const completeBookshelfList = document.getElementById('completeBookshelfList');
+  completeBookshelfList.innerHTML = '';
+
+  for (const bookItem of bookData) {
+    const bookElement = makeBook(bookItem);
+    if (bookItem.isComplete) completeBookshelfList.append(bookElement);
+    else incompleteBookshelfList.append(bookElement);
+  }
+}
 
 document.addEventListener(RENDER_EVENT, function () {
   const incompleteBookshelfList = document.getElementById('incompleteBookshelfList');

@@ -1,43 +1,52 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const submitBook = document.getElementById('inputBook');
-  submitBook.addEventListener('submit', function (event) {
+document.addEventListener("DOMContentLoaded", function () {
+  const submitBook = document.getElementById("inputBook");
+  submitBook.addEventListener("submit", function (event) {
     event.preventDefault();
     addBook();
   });
-
 });
 
 const searchButton = document.querySelector("#searchSubmit");
 
 searchButton.addEventListener("click", (e) => {
-const inputSearch = document.querySelector("#searchBookTitle").value;
-const bookItems = document.querySelectorAll(".book_list");
+  e.preventDefault();
+  const inputSearch = document.querySelector("#searchBookTitle").value;
+  const bookItems = document.querySelectorAll(".book_list");
 
-bookItems.forEach((bookItem) => {
-const bookTitle = bookItem.getElementsByTagName("h3").innerText;
-if (bookTitle.toLowerCase().includes(inputSearch.toLowerCase())) {
-bookItem.setAttribute("style", "display: '' ;");
-} else {
-bookItem.setAttribute("style", "display: none;");
-}
-});
-e.preventDefault();
+  console.log(books);
+
+  // bookItems.forEach((bookItem) => {
+  //   const bookTitle = bookItem.getElementsByTagName("h3").innerText;
+  //   if (bookTitle.toLowerCase().includes(inputSearch.toLowerCase())) {
+  //     bookItem.setAttribute("style", "display: '' ;");
+  //   } else {
+  //     bookItem.setAttribute("style", "display: none;");
+  //   }
+  // });
 });
 
 function addBook() {
-  const judulBuku = document.getElementById('inputBookTitle').value;
-  const authorBuku = document.getElementById('inputBookAuthor').value;
-  const bookYear = document.getElementById('inputBookYear').value;
-  const inputBookIsComplete = document.getElementById("inputBookIsComplete").checked;
+  const judulBuku = document.getElementById("inputBookTitle").value;
+  const authorBuku = document.getElementById("inputBookAuthor").value;
+  const bookYear = document.getElementById("inputBookYear").value;
+  const inputBookIsComplete = document.getElementById(
+    "inputBookIsComplete"
+  ).checked;
   const generatedID = generateId();
 
-  objekBuku = generateObjekBuku(generatedID, judulBuku, authorBuku, bookYear, inputBookIsComplete);
-  books.push(objekBuku)
+  objekBuku = generateObjekBuku(
+    generatedID,
+    judulBuku,
+    authorBuku,
+    bookYear,
+    inputBookIsComplete
+  );
+  books.push(objekBuku);
 
-  document.dispatchEvent(new Event(RENDER_EVENT))
+  document.dispatchEvent(new Event(RENDER_EVENT));
 }
 function generateId() {
-  return +new Date;
+  return +new Date();
 }
 function generateObjekBuku(id, title, author, year, isComplete) {
   return {
@@ -46,94 +55,98 @@ function generateObjekBuku(id, title, author, year, isComplete) {
     author,
     year,
     isComplete,
-  }
+  };
 }
 
 const books = [];
-const RENDER_EVENT = 'render-book';
+const RENDER_EVENT = "render-book";
 
 document.addEventListener(RENDER_EVENT, function () {
-  const incompleteBookshelfList = document.getElementById('incompleteBookshelfList');
-  incompleteBookshelfList.innerHTML = '';
+  const incompleteBookshelfList = document.getElementById(
+    "incompleteBookshelfList"
+  );
+  incompleteBookshelfList.innerHTML = "";
 
-  const completeBookshelfList = document.getElementById('completeBookshelfList');
-  completeBookshelfList.innerHTML = '';
+  const completeBookshelfList = document.getElementById(
+    "completeBookshelfList"
+  );
+  completeBookshelfList.innerHTML = "";
 
   for (const bookItem of books) {
     const bookElement = makeBook(bookItem);
     if (bookItem.isComplete) completeBookshelfList.append(bookElement);
     else incompleteBookshelfList.append(bookElement);
   }
-})
+});
 
 function makeBook(objekBuku) {
-  const judulBuku = document.createElement('h3');
+  const judulBuku = document.createElement("h3");
   judulBuku.innerText = objekBuku.title;
 
-  const author = document.createElement('p');
-  author.innerText = 'Penulis : ' + objekBuku.author;
+  const author = document.createElement("p");
+  author.innerText = "Penulis : " + objekBuku.author;
 
-  const tahun = document.createElement('p');
-  tahun.innerText = 'Tahun : ' + objekBuku.year;
+  const tahun = document.createElement("p");
+  tahun.innerText = "Tahun : " + objekBuku.year;
 
-  const bookItem = document.createElement('article');
-  bookItem.classList.add('book_item');
-  bookItem.setAttribute('id', `todo-${objekBuku.id}`)
+  const bookItem = document.createElement("article");
+  bookItem.classList.add("book_item");
+  bookItem.setAttribute("id", `todo-${objekBuku.id}`);
   bookItem.append(judulBuku, author, tahun);
 
   if (objekBuku.isComplete) {
-    const greenButton = document.createElement('button')
-    greenButton.classList.add('green');
-    greenButton.innerText = 'Belum selesai di Baca';
+    const greenButton = document.createElement("button");
+    greenButton.classList.add("green");
+    greenButton.innerText = "Belum selesai di Baca";
 
-    const redButton = document.createElement('button')
-    redButton.classList.add('red');
-    redButton.innerText = 'Hapus Buku';
+    const redButton = document.createElement("button");
+    redButton.classList.add("red");
+    redButton.innerText = "Hapus Buku";
 
-    const buttonContainer = document.createElement('div');
-    buttonContainer.classList.add('action');
-    buttonContainer.append(greenButton, redButton)
+    const buttonContainer = document.createElement("div");
+    buttonContainer.classList.add("action");
+    buttonContainer.append(greenButton, redButton);
 
-    greenButton.addEventListener('click', function(){
+    greenButton.addEventListener("click", function () {
       undoBook(objekBuku.id);
-    })
+    });
 
-    redButton.addEventListener('click', function(){
-      removeBook(objekBuku.id)
-    })
+    redButton.addEventListener("click", function () {
+      removeBook(objekBuku.id);
+    });
 
     bookItem.append(buttonContainer);
   } else {
-    const greenButton = document.createElement('button')
-    greenButton.classList.add('green');
-    greenButton.innerText = 'Selesai dibaca';
+    const greenButton = document.createElement("button");
+    greenButton.classList.add("green");
+    greenButton.innerText = "Selesai dibaca";
 
-    const redButton = document.createElement('button')
-    redButton.classList.add('red');
-    redButton.innerText = 'Hapus Buku';
+    const redButton = document.createElement("button");
+    redButton.classList.add("red");
+    redButton.innerText = "Hapus Buku";
 
-    const buttonContainer = document.createElement('div');
-    buttonContainer.classList.add('action');
+    const buttonContainer = document.createElement("div");
+    buttonContainer.classList.add("action");
     buttonContainer.append(greenButton, redButton);
 
-    greenButton.addEventListener('click', function () {
-      addBooktoComplete(objekBuku.id)
-    })
-    redButton.addEventListener('click', function(){
-      removeBook(objekBuku.id)
-    })
+    greenButton.addEventListener("click", function () {
+      addBooktoComplete(objekBuku.id);
+    });
+    redButton.addEventListener("click", function () {
+      removeBook(objekBuku.id);
+    });
 
     bookItem.append(buttonContainer);
   }
   return bookItem;
 }
 
-function undoBook(bookId){
-  const bookTarget = findBook(bookId)
+function undoBook(bookId) {
+  const bookTarget = findBook(bookId);
   if (bookTarget == null) return;
   objekBuku.isComplete = false;
-  
-  document.dispatchEvent(new Event(RENDER_EVENT))
+
+  document.dispatchEvent(new Event(RENDER_EVENT));
 }
 
 function addBooktoComplete(bookId) {
@@ -143,7 +156,7 @@ function addBooktoComplete(bookId) {
 
   document.dispatchEvent(new Event(RENDER_EVENT));
 }
-function removeBook(bookId){
+function removeBook(bookId) {
   const bookTarget = findBookIndex(bookId);
 
   if (bookTarget === -1) return;
@@ -159,9 +172,9 @@ function findBook(bookId) {
   }
   return null;
 }
-function findBookIndex(bookId){
-  for (const index in books){
-    if (books[index].id === bookId){
+function findBookIndex(bookId) {
+  for (const index in books) {
+    if (books[index].id === bookId) {
       return index;
     }
   }

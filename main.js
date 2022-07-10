@@ -4,26 +4,37 @@ document.addEventListener("DOMContentLoaded", function () {
     event.preventDefault();
     addBook();
   });
+
+  if (isStorageExist()){
+    loadDataFromStorage();
+  }
 });
 
-const searchButton = document.querySelector("#searchSubmit");
+document.querySelector('#searchSubmit').addEventListener('click', function (event) {
+  event.preventDefault();
 
-searchButton.addEventListener("click", (e) => {
-  e.preventDefault();
-  const inputSearch = document.querySelector("#searchBookTitle").value;
-  const bookItems = document.querySelectorAll(".book_list");
+  const titleQuery = document.querySelector('#searchBookTitle').value;
 
-  console.log(books);
-
-  // bookItems.forEach((bookItem) => {
-  //   const bookTitle = bookItem.getElementsByTagName("h3").innerText;
-  //   if (bookTitle.toLowerCase().includes(inputSearch.toLowerCase())) {
-  //     bookItem.setAttribute("style", "display: '' ;");
-  //   } else {
-  //     bookItem.setAttribute("style", "display: none;");
-  //   }
-  // });
+  if (titleQuery != '') {
+    const filteredBooks = books.filter((value) => value.title.includes(titleQuery));
+    renderBooks(filteredBooks);
+  }
+  else document.dispatchEvent(new Event(RENDER_EVENT));
 });
+
+const renderBooks = (bookData) => {
+  const incompleteBookshelfList = document.getElementById('incompleteBookshelfList');
+  incompleteBookshelfList.innerHTML = '';
+
+  const completeBookshelfList = document.getElementById('completeBookshelfList');
+  completeBookshelfList.innerHTML = '';
+
+  for (const bookItem of bookData) {
+    const bookElement = makeBook(bookItem);
+    if (bookItem.isComplete) completeBookshelfList.append(bookElement);
+    else incompleteBookshelfList.append(bookElement);
+  }
+}
 
 function addBook() {
   const judulBuku = document.getElementById("inputBookTitle").value;
@@ -44,6 +55,7 @@ function addBook() {
   books.push(objekBuku);
 
   document.dispatchEvent(new Event(RENDER_EVENT));
+  saveData();
 }
 function generateId() {
   return +new Date();
@@ -144,9 +156,10 @@ function makeBook(objekBuku) {
 function undoBook(bookId) {
   const bookTarget = findBook(bookId);
   if (bookTarget == null) return;
-  objekBuku.isComplete = false;
+  bookTarget.isComplete = false;
 
   document.dispatchEvent(new Event(RENDER_EVENT));
+  saveData();
 }
 
 function addBooktoComplete(bookId) {
@@ -155,6 +168,7 @@ function addBooktoComplete(bookId) {
   bookTarget.isComplete = true;
 
   document.dispatchEvent(new Event(RENDER_EVENT));
+  saveData();
 }
 function removeBook(bookId) {
   const bookTarget = findBookIndex(bookId);
@@ -162,6 +176,7 @@ function removeBook(bookId) {
   if (bookTarget === -1) return;
   books.splice(bookTarget, 1);
   document.dispatchEvent(new Event(RENDER_EVENT));
+  saveData();
 }
 
 function findBook(bookId) {
@@ -180,3 +195,40 @@ function findBookIndex(bookId) {
   }
   return -1;
 }
+
+const SAVED_EVENT = 'saved-book';
+const STORAGE_KEY = 'BOOKS_SHELF'
+
+function saveData() {
+  if (isStorageExist()) {
+    const parsed = JSON.stringify(books);
+    localStorage.setItem(STORAGE_KEY, parsed);
+    document.dispatchEvent(new Event(SAVED_EVENT))
+  }
+}
+
+function isStorageExist() {
+  if (typeof (storage) === undefined) {
+    alert ('Browser kamu tidak mendukung local storage');
+    return false;
+  }
+  return true;
+}
+
+document.addEventListener(SAVED_EVENT, function(){
+  console.log(localStorage.getItem(STORAGE_KEY))
+})
+
+function loadDataFromStorage() {
+  const serializedData = localStorage.getItem(STORAGE_KEY);
+  let data = JSON.parse(serializedData);
+ 
+  if (data !== null) {
+    for (const book of data) {
+      books.push(book);
+    }
+  }
+ 
+  document.dispatchEvent(new Event(RENDER_EVENT));
+}
+
